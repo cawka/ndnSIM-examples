@@ -68,7 +68,7 @@ main (int argc, char *argv[])
   cmd.Parse (argc, argv);
 
   AnnotatedTopologyReader topologyReader ("", 1);
-  topologyReader.SetFileName ("src/ndnSIM/examples/topologies/topo-tree.txt");
+  topologyReader.SetFileName ("topologies/topo-tree.txt");
   topologyReader.Read ();
 
   // Install CCNx stack on all nodes
