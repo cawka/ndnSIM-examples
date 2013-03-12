@@ -36,7 +36,7 @@ def configure(conf):
         exit (1)
 
     try:
-        conf.check_ns3_modules("ndnSIM core network internet point-to-point topology-read applications mobility")
+        conf.check_ns3_modules("ndnSIM core network internet point-to-point point-to-point-layout topology-read applications mobility")
         conf.check_ns3_modules("visualizer", mandatory = False)
     except:
         Logs.error ("NS-3 or one of the required NS-3 modules not found")
@@ -66,7 +66,7 @@ def configure(conf):
         conf.define ('NS3_ASSERT_ENABLE', 1)
 
 def build (bld):
-    deps = 'BOOST BOOST_IOSTREAMS' + ' '.join (['ns3_'+dep for dep in ['core', 'network', 'internet', 'ndnSIM', 'topology-read', 'applications', 'mobility', 'visualizer']]).upper ()
+    deps = 'BOOST BOOST_IOSTREAMS' + ' '.join (['ns3_'+dep for dep in ['core', 'network', 'internet', 'ndnSIM', 'topology-read', 'applications', 'mobility', 'visualizer', 'point-to-point-layout']]).upper ()
 
     common = bld.objects (
         target = "extensions",
