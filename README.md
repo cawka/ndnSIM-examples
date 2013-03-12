@@ -10,7 +10,7 @@ The code should also work with the latest version of ndnSIM, but it is not guara
 
     git clone git://github.com/cawka/ns-3-dev-ndnSIM.git -b ns-3.16-ndnSIM ns-3
     git clone git://github.com/cawka/pybindgen.git pybindgen
-    git clone git://github.com/NDN-Routing/ndnSIM.git -b v0.2.8 ns-3/src/ndnSIM
+    git clone git://github.com/NDN-Routing/ndnSIM.git ns-3/src/ndnSIM
 
     git clone git://github.com/cawka/ndnSIM-sample-topologies.git ndnSIM-sample-topologies
 
@@ -109,3 +109,21 @@ Available simulations
 =====================
 
 For more information about these examples, refer to [ndnSIM website](http://ndnsim.net/examples.html).
+
+Other examples
+--------------
+
+A very simplistic example node-access-policy.h illustrates how to get
+pointer to the ContentStore/Node and to enumerate neighbors of the node upon each
+addition and eviction of the ContentStore entry.
+
+To run scenario, which uses new policy:
+   ./waf --run=ndn-simple-with-cs-node-access
+
+content-store-with-node-access.cc instantiates the following variants of
+the ContentStore (can be used in ndn::StackHelper::SetContentStore):
+
+- ns3::ndn::cs::LruNodeAccess
+- ns3::ndn::cs::RandomNodeAccess
+- ns3::ndn::cs::FifoNodeAccess
+- ns3::ndn::cs::LfuNodeAccess
