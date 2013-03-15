@@ -48,8 +48,8 @@ DumbRequester::GetTypeId ()
 
     .AddAttribute ("Prefix", "Requested name",
                    StringValue ("/dumb-interest"),
-                   ndn::MakeNameComponentsAccessor (&DumbRequester::m_name),
-                   ndn::MakeNameComponentsChecker ())
+                   ndn::MakeNameAccessor (&DumbRequester::m_name),
+                   ndn::MakeNameChecker ())
     ;
   return tid;
 }
