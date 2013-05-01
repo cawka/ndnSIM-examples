@@ -113,6 +113,8 @@ For more information about these examples, refer to [ndnSIM website](http://ndns
 Other examples
 --------------
 
+### Custom content store policies
+
 A very simplistic example node-access-policy.h illustrates how to get
 pointer to the ContentStore/Node and to enumerate neighbors of the node upon each
 addition and eviction of the ContentStore entry.
@@ -127,3 +129,5 @@ the ContentStore (can be used in ndn::StackHelper::SetContentStore):
 - ns3::ndn::cs::RandomNodeAccess
 - ns3::ndn::cs::FifoNodeAccess
 - ns3::ndn::cs::LfuNodeAccess
+
+
