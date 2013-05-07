@@ -94,8 +94,6 @@ main (int argc, char *argv[])
   std::cout << "Time" << "\t"
             << "NodeId" << "\t"
             << "NodeName" << "\t"
-            << "Inserts" << "\t"
-            << "Lookups" << "\t"
             << "NumberOfPitEntries" << "\n";
   Simulator::Schedule (Seconds (1), PeriodicStatsPrinter, nodes.Get (0), Seconds (1));
   Simulator::Schedule (Seconds (1), PeriodicStatsPrinter, nodes.Get (1), Seconds (1));
@@ -117,7 +115,7 @@ main (int argc, char *argv[])
   producerHelper.SetAttribute ("PayloadSize", StringValue("1024"));
   producerHelper.Install (nodes.Get (2)); // last node
 
-  Simulator::Stop (Seconds (20.0));
+  Simulator::Stop (Seconds (1.0));
 
   Simulator::Run ();
   Simulator::Destroy ();
