@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2012 University of California, Los Angeles
+ * Copyright (c) 2012-2013 University of California, Los Angeles
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -17,7 +17,7 @@
  *
  * Author: Alexander Afanasyev <alexander.afanasyev@ucla.edu>
  */
-// ndn-simple.cc
+// ndn-simple-with-pit-count-stats.cc
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
 #include "ns3/point-to-point-module.h"
@@ -42,10 +42,23 @@ using namespace ns3;
  *
  * To run scenario and see what is happening, use the following command:
  *
- *     NS_LOG=ndn.Consumer:ndn.Producer ./waf --run=ndn-simple
+ *     ./waf --run=ndn-simple-with-pit-count-stats
  */
 
-int 
+void
+PeriodicStatsPrinter (Ptr<Node> node, Time next)
+{
+  Ptr<ndn::Pit> pit = node->GetObject<ndn::Pit> ();
+
+  std::cout << Simulator::Now ().ToDouble (Time::S) << "\t"
+            << node->GetId () << "\t"
+            << Names::FindName (node) << "\t"
+            << pit->GetSize () << "\n";
+  
+  Simulator::Schedule (next, PeriodicStatsPrinter, node, next);
+}
+
+int
 main (int argc, char *argv[])
 {
   // setting default parameters for PointToPoint links and channels
@@ -66,11 +79,28 @@ main (int argc, char *argv[])
   p2p.Install (nodes.Get (0), nodes.Get (1));
   p2p.Install (nodes.Get (1), nodes.Get (2));
 
-  // Install CCNx stack on all nodes
-  ndn::StackHelper ccnxHelper;
-  ccnxHelper.SetDefaultRoutes (true);
-  ccnxHelper.InstallAll ();
+  // see more http://www.nsnam.org/doxygen/classns3_1_1_names.html
+  Names::Add ("consumer", nodes.Get (0));
+  Names::Add ("router",   nodes.Get (1));
+  Names::Add ("producer", nodes.Get (2));
 
+  // Install CCNx stack on all nodes
+  ndn::StackHelper ndnHelper;
+  ndnHelper.SetDefaultRoutes (true);
+  ndnHelper.SetPit ("ns3::ndn::pit::Persistent::AggregateStats");
+  ndnHelper.InstallAll ();
+
+  // set up periodic PIT stats printer on node 1
+  std::cout << "Time" << "\t"
+            << "NodeId" << "\t"
+            << "NodeName" << "\t"
+            << "Inserts" << "\t"
+            << "Lookups" << "\t"
+            << "NumberOfPitEntries" << "\n";
+  Simulator::Schedule (Seconds (1), PeriodicStatsPrinter, nodes.Get (0), Seconds (1));
+  Simulator::Schedule (Seconds (1), PeriodicStatsPrinter, nodes.Get (1), Seconds (1));
+  Simulator::Schedule (Seconds (1), PeriodicStatsPrinter, nodes.Get (2), Seconds (1));
+  
   // Installing applications
 
   // Consumer

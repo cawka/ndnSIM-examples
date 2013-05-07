@@ -76,7 +76,7 @@ def build (bld):
         cxxflags = [bld.env.CXX11_CMD],
         )
 
-    for scenario in bld.path.ant_glob (['scenarios/*.cc']):
+    for scenario in bld.path.ant_glob (['examples/*.cc']):
         name = str(scenario)[:-len(".cc")]
         app = bld.program (
             target = name,
