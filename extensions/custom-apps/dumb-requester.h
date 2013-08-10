@@ -24,7 +24,7 @@
 #define DUMB_REQUESTER_H_
 
 #include "ns3/ndn-app.h"
-#include "ns3/ndn-name-components.h"
+#include "ns3/ndn-name.h"
 
 namespace ns3 {
 
@@ -52,8 +52,7 @@ public:
 
   // (overridden from ndn::App) Callback that will be called when Data arrives
   virtual void
-  OnContentObject (const Ptr<const ndn::ContentObjectHeader> &contentObject,
-                   Ptr<Packet> payload);
+  OnData (Ptr<const ndn::Data> data);
   
 private:
   void
@@ -61,7 +60,7 @@ private:
 
 private:
   bool m_isRunning;
-  ndn::NameComponents m_name;
+  ndn::Name m_name;
 };
 
 } // namespace ns3

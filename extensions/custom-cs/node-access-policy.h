@@ -81,7 +81,7 @@ struct node_access_policy_traits
       {
         Ptr<Node> node = item->payload ()->GetContentStore ()->template GetObject<Node> ();
 
-        std::cout << "ConentObject: " << item->payload ()->GetHeader ()->GetName () << " has been added to Node# " << node->GetId () << std::endl;
+        std::cout << "ConentObject: " << item->payload ()->GetName () << " has been added to Node# " << node->GetId () << std::endl;
         printNeighbors (node);
 
         return true;
@@ -98,7 +98,7 @@ struct node_access_policy_traits
       {
         Ptr<Node> node = item->payload ()->GetContentStore ()->template GetObject<Node> ();
 
-        std::cout << "ConentObject: " << item->payload ()->GetHeader ()->GetName () << " has been evicted from Node# " << node->GetId () << std::endl;
+        std::cout << "ConentObject: " << item->payload ()->GetName () << " has been evicted from Node# " << node->GetId () << std::endl;
 
         printNeighbors (node);
       }

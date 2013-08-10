@@ -45,9 +45,9 @@ Hijacker::Hijacker ()
 }
 
 void
-Hijacker::OnInterest (const Ptr<const ndn::InterestHeader> &interest, Ptr<Packet> packet)
+Hijacker::OnInterest (Ptr<const ndn::Interest> interest)
 {
-  ndn::App::OnInterest (interest, packet); // forward call to perform app-level tracing
+  ndn::App::OnInterest (interest); // forward call to perform app-level tracing
   // do nothing else (hijack interest)
 
   NS_LOG_DEBUG ("Do nothing for incoming interest for" << interest->GetName ());
@@ -60,7 +60,7 @@ Hijacker::StartApplication ()
 
   // equivalent to setting interest filter for "/" prefix
   Ptr<ndn::Fib> fib = GetNode ()->GetObject<ndn::Fib> ();
-  Ptr<ndn::fib::Entry> fibEntry = fib->Add ("/", m_face, 0);
+  Ptr<ndn::fib::Entry> fibEntry = fib->Add (ndn::Name ("/"), m_face, 0);
   fibEntry->UpdateStatus (m_face, ndn::fib::FaceMetric::NDN_FIB_GREEN);
 }
 

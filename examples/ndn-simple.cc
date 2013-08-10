@@ -50,7 +50,7 @@ main (int argc, char *argv[])
 {
   // setting default parameters for PointToPoint links and channels
   Config::SetDefault ("ns3::PointToPointNetDevice::DataRate", StringValue ("1Mbps"));
-  Config::SetDefault ("ns3::PointToPointChannel::Delay", StringValue ("10ms"));
+  Config::SetDefault ("ns3::PointToPointChannel::Delay", TimeValue ());
   Config::SetDefault ("ns3::DropTailQueue::MaxPackets", StringValue ("20"));
 
   // Read optional command-line parameters (e.g., enable visualizer with ./waf --run=<> --visualize
@@ -77,7 +77,7 @@ main (int argc, char *argv[])
   ndn::AppHelper consumerHelper ("ns3::ndn::ConsumerCbr");
   // Consumer will request /prefix/0, /prefix/1, ...
   consumerHelper.SetPrefix ("/prefix");
-  consumerHelper.SetAttribute ("Frequency", StringValue ("10")); // 10 interests a second
+  consumerHelper.SetAttribute ("Frequency", StringValue ("0.1")); // 10 interests a second
   consumerHelper.Install (nodes.Get (0)); // first node
 
   // Producer

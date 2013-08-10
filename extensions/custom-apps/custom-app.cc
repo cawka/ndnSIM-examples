@@ -28,7 +28,7 @@
 
 #include "ns3/ndn-app-face.h"
 #include "ns3/ndn-interest.h"
-#include "ns3/ndn-content-object.h"
+#include "ns3/ndn-data.h"
 
 #include "ns3/ndn-fib.h"
 #include "ns3/random-variable.h"
@@ -58,9 +58,9 @@ CustomApp::StartApplication ()
   ndn::App::StartApplication ();
 
   // Create a name components object for name ``/prefix/sub``
-  Ptr<ndn::NameComponents> prefix = Create<ndn::NameComponents> (); // now prefix contains ``/``
-  prefix->Add ("prefix"); // now prefix contains ``/prefix``
-  prefix->Add ("sub"); // now prefix contains ``/prefix/sub``
+  Ptr<ndn::Name> prefix = Create<ndn::Name> (); // now prefix contains ``/``
+  prefix->append ("prefix"); // now prefix contains ``/prefix``
+  prefix->append ("sub"); // now prefix contains ``/prefix/sub``
 
   /////////////////////////////////////////////////////////////////////////////
   // Creating FIB entry that ensures that we will receive incoming Interests //
@@ -91,31 +91,27 @@ CustomApp::SendInterest ()
   // Sending one Interest packet out //
   /////////////////////////////////////
   
-  Ptr<ndn::NameComponents> prefix = Create<ndn::NameComponents> ("/prefix/sub"); // another way to create name
+  Ptr<ndn::Name> prefix = Create<ndn::Name> ("/prefix/sub"); // another way to create name
 
   // Create and configure ndn::InterestHeader
-  ndn::InterestHeader interestHeader;
+  Ptr<ndn::Interest> interest = Create<ndn::Interest> ();
   UniformVariable rand (0,std::numeric_limits<uint32_t>::max ());
-  interestHeader.SetNonce            (rand.GetValue ());
-  interestHeader.SetName             (prefix);
-  interestHeader.SetInterestLifetime (Seconds (1.0));
-
-  // Create packet and add ndn::InterestHeader
-  Ptr<Packet> packet = Create<Packet> ();
-  packet->AddHeader (interestHeader);
+  interest->SetNonce            (rand.GetValue ());
+  interest->SetName             (prefix);
+  interest->SetInterestLifetime (Seconds (1.0));
 
   NS_LOG_DEBUG ("Sending Interest packet for " << *prefix);
   
   // Forward packet to lower (network) layer
-  m_protocolHandler (packet);
+  Simulator::ScheduleNow (&ndn::Face::ReceiveInterest, m_face, interest);
 
   // Call trace (for logging purposes)
-  m_transmittedInterests (&interestHeader, this, m_face);
+  m_transmittedInterests (interest, this, m_face);
 }
 
 // Callback that will be called when Interest arrives
 void
-CustomApp::OnInterest (const Ptr<const ndn::InterestHeader> &interest, Ptr<Packet> origPacket)
+CustomApp::OnInterest (Ptr<const ndn::Interest> interest)
 {
   NS_LOG_DEBUG ("Received Interest packet for " << interest->GetName ());
 
@@ -124,33 +120,25 @@ CustomApp::OnInterest (const Ptr<const ndn::InterestHeader> &interest, Ptr<Packe
 
   // Note that Interests send out by the app will not be sent back to the app !
   
-  ndn::ContentObjectHeader data;
-  data.SetName (Create<ndn::NameComponents> (interest->GetName ())); // data will have the same name as Interests
-
-  ndn::ContentObjectTail trailer; // doesn't require any configuration
-
-  // Create packet and add header and trailer
-  Ptr<Packet> packet = Create<Packet> (1024);
-  packet->AddHeader (data);
-  packet->AddTrailer (trailer);
-
-  NS_LOG_DEBUG ("Sending ContentObject packet for " << data.GetName ());
+  Ptr<ndn::Data> data = Create<ndn::Data> (Create<Packet> (1024));
+  data->SetName (Create<ndn::NameComponents> (interest->GetName ())); // data will have the same name as Interests
+  
+  NS_LOG_DEBUG ("Sending ContentObject packet for " << data->GetName ());
 
   // Forward packet to lower (network) layer
-  m_protocolHandler (packet);
+  Simulator::ScheduleNow (&ndn::Face::ReceiveData, m_face, data);
 
   // Call trace (for logging purposes)
-  m_transmittedContentObjects (&data, packet, this, m_face);
+  m_transmittedDatas (data, this, m_face);
 }
 
 // Callback that will be called when Data arrives
 void
-CustomApp::OnContentObject (const Ptr<const ndn::ContentObjectHeader> &contentObject,
-                            Ptr<Packet> payload)
+CustomApp::OnData (Ptr<const ndn::Data> data)
 {
-  NS_LOG_DEBUG ("Receiving ContentObject packet for " << contentObject->GetName ());
+  NS_LOG_DEBUG ("Receiving Data packet for " << data->GetName ());
 
-  std::cout << "DATA received for name " << contentObject->GetName () << std::endl;
+  std::cout << "DATA received for name " << data->GetName () << std::endl;
 }
 
 

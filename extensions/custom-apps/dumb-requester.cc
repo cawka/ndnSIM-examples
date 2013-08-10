@@ -30,7 +30,7 @@
 
 #include "ns3/ndn-app-face.h"
 #include "ns3/ndn-interest.h"
-#include "ns3/ndn-content-object.h"
+#include "ns3/ndn-data.h"
 
 NS_LOG_COMPONENT_DEFINE ("DumbRequester");
 
@@ -88,34 +88,29 @@ DumbRequester::SendInterest ()
   // Sending one Interest packet out //
   /////////////////////////////////////
   
-  Ptr<ndn::NameComponents> prefix = Create<ndn::NameComponents> (m_name); // another way to create name
+  Ptr<ndn::Name> prefix = Create<ndn::Name> (m_name); // another way to create name
 
   // Create and configure ndn::InterestHeader
-  ndn::InterestHeader interestHeader;
+  Ptr<ndn::Interest> interest = Create<ndn::Interest> ();
   UniformVariable rand (0,std::numeric_limits<uint32_t>::max ());
-  interestHeader.SetNonce            (rand.GetValue ());
-  interestHeader.SetName             (prefix);
-  interestHeader.SetInterestLifetime (Seconds (1.0));
-
-  // Create packet and add ndn::InterestHeader
-  Ptr<Packet> packet = Create<Packet> ();
-  packet->AddHeader (interestHeader);
+  interest->SetNonce            (rand.GetValue ());
+  interest->SetName             (prefix);
+  interest->SetInterestLifetime (Seconds (1.0));
 
   NS_LOG_DEBUG ("Sending Interest packet for " << *prefix);
-  
-  // Forward packet to lower (network) layer
-  m_protocolHandler (packet);
+
+  Simulator::ScheduleNow (&ndn::Face::ReceiveInterest, m_face, interest);
 
   // Call trace (for logging purposes)
-  m_transmittedInterests (&interestHeader, this, m_face);
+  m_transmittedInterests (interest, this, m_face);
+
   Simulator::Schedule (Seconds (1.0), &DumbRequester::SendInterest, this);
 }
 
 void
-DumbRequester::OnContentObject (const Ptr<const ndn::ContentObjectHeader> &contentObject,
-                                Ptr<Packet> payload)
+DumbRequester::OnData (Ptr<const ndn::Data> data)
 {
-  NS_LOG_DEBUG ("Receiving ContentObject packet for " << contentObject->GetName ());
+  NS_LOG_DEBUG ("Receiving ContentObject packet for " << data->GetName ());
 }
 
 

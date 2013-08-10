@@ -23,7 +23,7 @@
 #include "ns3/ndn-fib-entry.h"
 #include "ns3/ndn-pit-entry.h"
 #include "ns3/ndn-interest.h"
-#include "ns3/ndn-content-object.h"
+#include "ns3/ndn-data.h"
 
 namespace ns3 {
 namespace ndn {
@@ -61,23 +61,20 @@ PreProcessIncomingPackets::PreProcessIncomingPackets ()
 
 void
 PreProcessIncomingPackets::OnInterest (Ptr<Face> face,
-                                       Ptr<const InterestHeader> header,
-                                       Ptr<const Packet> origPacket)
+                                       Ptr<Interest> interest)
 {
-  std::cout << "Before BaseStrategy processing of incoming Interest for: " << header->GetName () << std::endl;
+  std::cout << "Before BaseStrategy processing of incoming Interest for: " << interest->GetName () << std::endl;
   
-  BaseStrategy::OnInterest (face, header, origPacket);
+  BaseStrategy::OnInterest (face, interest);
 }
 
 void
 PreProcessIncomingPackets::OnData (Ptr<Face> face,
-                                   Ptr<const ContentObjectHeader> header,
-                                   Ptr<Packet> payload,
-                                   Ptr<const Packet> origPacket)
+                                   Ptr<Data> data)
 {
-  std::cout << "Before BaseStrategy processing of incoming Data for: " << header->GetName () << std::endl;
+  std::cout << "Before BaseStrategy processing of incoming Data for: " << data->GetName () << std::endl;
 
-  BaseStrategy::OnData (face, header, payload, origPacket);
+  BaseStrategy::OnData (face, data);
 }
 
 

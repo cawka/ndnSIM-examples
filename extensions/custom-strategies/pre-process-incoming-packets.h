@@ -47,14 +47,11 @@ public:
   // from ndn-forwarding-strategy
   virtual void
   OnInterest (Ptr<Face> face,
-              Ptr<const InterestHeader> header,
-              Ptr<const Packet> origPacket);
+              Ptr<Interest> interest);
 
   virtual void
   OnData (Ptr<Face> face,
-          Ptr<const ContentObjectHeader> header,
-          Ptr<Packet> payload,
-          Ptr<const Packet> origPacket);
+          Ptr<Data> data);
 
 protected:
   static LogComponent g_log;
